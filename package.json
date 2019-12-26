@@ -77,7 +77,7 @@
     "typescript": "^3.7.4"
   },
   "dependencies": {
-    "@ulfalfa/fritzbox": "0.0.9",
+    "@ulfalfa/fritzbox": "0.0.10",
     "debug": "^4.1.1",
     "got": "^10.2.0",
     "rxjs": "^6.5.3",

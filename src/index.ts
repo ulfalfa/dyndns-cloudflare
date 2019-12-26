@@ -9,37 +9,12 @@ import {
   distinctUntilChanged,
   filter,
   switchMap,
+  tap,
 } from 'rxjs/operators'
 
 const debug = Debug('ulfalfa:dyndns-cloudflare')
 
 import yargs = require('yargs')
-
-async function getIp(): Promise<string> {
-  // for ip 6
-  // .exec(
-  //   'urn:schemas-upnp-org:service:WANIPConnection:1',
-  //  'X_AVM_DE_GetExternalIPv6Address'
-  // )
-
-  return fb
-    .exec(
-      'urn:schemas-upnp-org:service:WANIPConnection:1',
-      'GetExternalIPAddress'
-    )
-    .then((result: any) => {
-      debug(`IP read ${result.NewExternalIPAddress}`)
-      if (result.NewExternalIPAddress === '') {
-        return undefined
-      } else {
-        return result.NewExternalIPAddress
-      }
-    })
-    .catch(e => {
-      console.error(`Error getting fritzbox ip`, e)
-      return undefined
-    })
-}
 
 const argv = yargs.env('DYN').options({
   cfApikey: { type: 'string', demandOption: true, alias: 'k' },
@@ -59,15 +34,17 @@ const fb = new Fritzbox({ url: argv.fritzBox })
 
 const cf = new Cloudflare({
   eMail: argv.cfEmail as string,
-  key: argv.cfApiKey as string,
+  key: argv.cfApikey as string,
 })
 
-const observable = from(cf.initialize('krusty', 'steinberg-online'))
+from(cf.initialize(argv.cfDomain, argv.cfHost))
   .pipe(
     switchMap(() => interval(argv.intervall * 1000)),
-    mergeMap(() => getIp()),
-    filter(ip => !!ip),
+    mergeMap(() => fb.getExternalIPV4()),
+
+    filter(ip => !!ip && ip !== ''),
     distinctUntilChanged(),
+    tap(ip => debug(`Current fritzip is ${ip}`)),
     mergeMap(ip => cf.setIp(ip))
   )
   .subscribe(debug, console.error)

@@ -28,13 +28,14 @@ export class Cloudflare {
   constructor(protected options: CloudflareOptions) {}
 
   protected getCf(url: string) {
+    debug(`Getting ${url} from cloudflare api`)
     return got({
       method: 'GET',
       url: `${CF_API}${url}`,
       responseType: 'json',
       headers: {
         'X-Auth-Key': this.options.key,
-        'X-Auth-Email': this.options.key,
+        'X-Auth-Email': this.options.eMail,
       },
     }).then(result => (result.body as any).result)
   }
@@ -61,7 +62,6 @@ export class Cloudflare {
     if (currentDns.content !== ip) {
       await got({
         method: 'PUT',
-        decompress: false,
         url: `${CF_API}/zones/${zoneId}/dns_records/${dnsId}`,
         responseType: 'json',
 
@@ -73,7 +73,7 @@ export class Cloudflare {
         },
         headers: {
           'X-Auth-Key': this.options.key,
-          'X-Auth-Email': this.options.key,
+          'X-Auth-Email': this.options.eMail,
         },
       }).then(result => {
         debug(result.body)
