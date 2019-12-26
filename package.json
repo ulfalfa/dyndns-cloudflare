@@ -16,14 +16,14 @@
     "watch": "ava -vw",
     "check-coverage": "nyc check-coverage",
     "html-coverage": "nyc report --reporter=html",
-    "test": "yarn lint && yarn unit && yarn check-coverage",
-    "cov": "yarn unit && yarn html-coverage && opn build/coverage/index.html",
-    "docs": "yarn docs:html && opn build/docs/index.html",
+    "test": "npm run lint && npm run unit && npm run check-coverage",
+    "cov": "npm run unit && npm run html-coverage && opn build/coverage/index.html",
+    "docs": "npm run docs:html && opn build/docs/index.html",
     "docs:html": "typedoc src/index.ts --excludePrivate --excludeNotExported --excludeProtected --mode file --theme minimal --out build/docs",
-    "docs:publish": "yarn docs:html && gh-pages -d build/docs",
+    "docs:publish": "npm run docs:html && gh-pages -d build/docs",
     "changelog": "standard-version",
-    "release": "yarn reset && yarn test && yarn build && yarn docs:publish && yarn changelog",
-    "reset": "git clean -dfx && git reset --hard && yarn"
+    "release": "npm run reset && npm run test && npm run build && npm run docs:publish && npm run changelog",
+    "reset": "git clean -dfx && git reset --hard && npm run"
   },
   "ava": {
     "compileEnhancements": false,
@@ -77,7 +77,7 @@
     "typescript": "^3.7.4"
   },
   "dependencies": {
-    "@ulfalfa/fritzbox": "0.0.10",
+    "@ulfalfa/fritzbox": "^0.0.10",
     "debug": "^4.1.1",
     "got": "^10.2.0",
     "rxjs": "^6.5.3",
