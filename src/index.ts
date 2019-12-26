@@ -1,10 +1,15 @@
 import { Fritzbox } from '@ulfalfa/fritzbox'
 
-import * as Cloudflare from 'cloudflare'
+import { Cloudflare } from './cloudflare'
 
 import Debug from 'debug'
-import { interval } from 'rxjs'
-import { mergeMap, distinctUntilChanged } from 'rxjs/operators'
+import { interval, from } from 'rxjs'
+import {
+  mergeMap,
+  distinctUntilChanged,
+  filter,
+  switchMap,
+} from 'rxjs/operators'
 
 const debug = Debug('ulfalfa:dyndns-cloudflare')
 
@@ -24,55 +29,24 @@ async function getIp(): Promise<string> {
     )
     .then((result: any) => {
       debug(`IP read ${result.NewExternalIPAddress}`)
-      return result.NewExternalIPAddress
+      if (result.NewExternalIPAddress === '') {
+        return undefined
+      } else {
+        return result.NewExternalIPAddress
+      }
+    })
+    .catch(e => {
+      console.error(`Error getting fritzbox ip`, e)
+      return undefined
     })
 }
 
-async function updateCloudFlare(host: string, domain: string, ip: string) {
-  const name = `${host}.${domain}`
-  debug(`updating A record of ${name} with ${ip}`)
-
-  // first getting info
-  const zone = await cf.zones
-    .browse()
-    .then(result => result.result.find(zone => zone.name === domain))
-
-  if (!zone) {
-    throw new Error(`Zone for ${domain} not found `)
-  }
-
-  const dnsrecord = await cf.dnsRecords
-    .browse(zone.id)
-    .then(result =>
-      result.result.find(record => record.name === name && record.type === 'A')
-    )
-
-  if (!dnsrecord) {
-    throw new Error(`DnsRecord of type A for ${name} not found `)
-  }
-
-  if (dnsrecord.content !== ip) {
-    debug(`Updating zone ${zone.id} and record ${dnsrecord.id} with ${ip}`)
-    return await cf.dnsRecords
-      .edit(zone.id, dnsrecord.id, {
-        type: 'A',
-        name,
-        ttl: 1,
-        content: ip,
-      })
-      .then(result => result.result)
-  } else {
-    debug('IP already there')
-    return dnsrecord
-  }
-}
-
-const argv = yargs.options({
-  cfApiKey: { type: 'string', demandOption: true, alias: 'k' },
+const argv = yargs.env('DYN').options({
+  cfApikey: { type: 'string', demandOption: true, alias: 'k' },
   cfEmail: { type: 'string', demandOption: true, alias: 'e' },
   cfDomain: { type: 'string', demandOption: true, alias: 'd' },
   cfHost: { type: 'string', demandOption: true, alias: 'h' },
-  fritz: {
+  fritzBox: {
     type: 'string',
     default: 'http://fritz.box:49000',
     alias: 'f',
@@ -81,17 +55,19 @@ const argv = yargs.options({
   intervall: { type: 'number', demandOption: false, alias: 'i', default: 60 },
 }).argv
 
-const fb = new Fritzbox({ url: argv.fritz })
+const fb = new Fritzbox({ url: argv.fritzBox })
 
 const cf = new Cloudflare({
-  email: argv.cfEmail,
-  key: argv.cfApiKey,
+  eMail: argv.cfEmail as string,
+  key: argv.cfApiKey as string,
 })
 
-const observable = interval(argv.intervall * 1000)
+const observable = from(cf.initialize('krusty', 'steinberg-online'))
   .pipe(
+    switchMap(() => interval(argv.intervall * 1000)),
     mergeMap(() => getIp()),
+    filter(ip => !!ip),
     distinctUntilChanged(),
-    mergeMap(ip => updateCloudFlare('krusty', 'steinberg-online.de', ip))
+    mergeMap(ip => cf.setIp(ip))
   )
   .subscribe(debug, console.error)

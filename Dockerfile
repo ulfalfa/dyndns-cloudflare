@@ -1,21 +1,33 @@
-FROM node:10.13.0-alpine
-# Env
-ENV TIME_ZONE=Asia/Hong_Kong
-ENV ENV_NAME dev
-ENV EGG_SERVER_ENV dev
-ENV NODE_ENV dev
-ENV NODE_CONFIG_ENV dev
+FROM node:10.13.0-alpine AS builder
+
 
 # Create Directory for the Container
 WORKDIR /usr/src/app
+
 # Only copy the package.json file to work directory
 COPY package.json .
-# Install all Packages
-RUN npm install
-# Copy all other source code to work directory
-ADD . /usr/src/app
-# TypeScript
-RUN npm run build
-# Start
-CMD [ "npm", "start" ]
-EXPOSE 7001
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+COPY tsconfig*.json ./
+COPY ./src ./src
+RUN npm ci --quiet && npm run build
+#
+# Production stage.
+# This state compile get back the JavaScript code from builder stage
+# It will also install the production package only
+#
+FROM node:12.13.0-slim
+
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY package*.json ./
+RUN npm ci --quiet --only=production
+
+## We just need the build to execute the command
+COPY --from=builder /usr/src/app/dist ./dist
+
+ENTRYPOINT [ "node", "dist/index" ]
+CMD []
