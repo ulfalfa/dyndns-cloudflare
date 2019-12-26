@@ -37,7 +37,7 @@ const cf = new Cloudflare({
   key: argv.cfApikey as string,
 })
 
-from(cf.initialize(argv.cfDomain, argv.cfHost))
+const sub = from(cf.initialize(argv.cfDomain, argv.cfHost))
   .pipe(
     switchMap(() => interval(argv.intervall * 1000)),
     mergeMap(() => fb.getExternalIPV4()),
@@ -47,4 +47,10 @@ from(cf.initialize(argv.cfDomain, argv.cfHost))
     tap(ip => debug(`Current fritzip is ${ip}`)),
     mergeMap(ip => cf.setIp(ip))
   )
-  .subscribe(debug, console.error)
+  .subscribe(debug(`Updated cloudflare record`))
+
+process.on('SIGINT', () => {
+  debug('Interrupted')
+  sub.unsubscribe()
+  process.exit(0)
+})

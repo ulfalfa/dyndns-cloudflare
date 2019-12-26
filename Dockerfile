@@ -29,5 +29,6 @@ RUN npm ci --quiet --only=production
 ## We just need the build to execute the command
 COPY --from=builder /usr/src/app/dist ./dist
 
+ENV DEBUG=ulfalfa:dyndns-cloudflare
 ENTRYPOINT [ "node", "dist/index" ]
 CMD []
