@@ -1,0 +1,11 @@
+version: '3.7'
+services:
+  dyncf:
+    image: ulfalfa/dyncf
+    build:
+      context: .
+    environment:
+      - DYN_CF_DOMAIN=example.com
+      - DYN_CF_HOST=dynamic
+      - DYN_CF_EMAIL=YOUR_LOGIN_EMAIL_OF_CF
+      - DYN_CF_APIKEY=YOUR_SECRET_CF_API_KEY
