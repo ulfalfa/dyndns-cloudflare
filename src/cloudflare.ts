@@ -82,8 +82,8 @@ export class Cloudflare {
     this._dnsRecord = currentDns
   }
 
-  async initialize(domain: string, host: string) {
-    const name = `${host}.${domain}`
+  async initialize(domain: string, host?: string) {
+    const name = host ? `${host}.${domain}` : domain
 
     const zone = await this.getZones().then(result =>
       result.find(aZone => aZone.name === domain)
