@@ -1,6 +1,6 @@
 {
   "name": "@ulfalfa/dyndns-cloudflare",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "DynDns update for cloudflare base on current fritzbox ip",
   "main": "dist/index",
   "author": "ulfalfa",

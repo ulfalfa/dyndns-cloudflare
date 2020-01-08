@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://gitlab.com/ulfalfa/dyndns-cloudflare/compare/v0.0.2...v0.0.3) (2020-01-08)
+
+
+### Features
+
+* allowing to update the root domain with '@' and also multiple domains ([21a4d0b](https://gitlab.com/ulfalfa/dyndns-cloudflare/commit/21a4d0b42def46a52150d2e3620e01a3d0766eda))
+* dnycfhost is optional - if left out the domain entry is updated ([a674da2](https://gitlab.com/ulfalfa/dyndns-cloudflare/commit/a674da22551666dd16c29e748a8a0742e0b98129))
+
+
+### Bug Fixes
+
+* allow multiple hosts specified in env variables (s. yargs bug https://github.com/yargs/yargs/is ([bd3d01b](https://gitlab.com/ulfalfa/dyndns-cloudflare/commit/bd3d01b687fa59a58ac7d9852c87090ad3ad05c5))
+
 ### 0.0.2 (2019-12-27)
 
 
