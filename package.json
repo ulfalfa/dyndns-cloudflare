@@ -18,11 +18,9 @@
     "html-coverage": "nyc report --reporter=html",
     "test": "npm run lint && npm run unit && npm run check-coverage",
     "cov": "npm run unit && npm run html-coverage && opn build/coverage/index.html",
-    "docs": "npm run docs:html && opn build/docs/index.html",
-    "docs:html": "typedoc src/index.ts --excludePrivate --excludeNotExported --excludeProtected --mode file --theme minimal --out build/docs",
-    "docs:publish": "npm run docs:html && gh-pages -d build/docs",
-    "changelog": "standard-version",
-    "release": "npm run reset && npm run test && npm run build && npm run docs:publish && npm run changelog",
+    "changelog": "standard-version -t ''",
+    "push": "git push --follow-tags origin master",
+    "release": "npm run test && npm run build && npm run changelog && npm run push",
     "reset": "git clean -dfx && git reset --hard && npm run"
   },
   "ava": {

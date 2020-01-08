@@ -1,5 +1,11 @@
+install_deps:
+  image: node:latest
+  stage: test
+  script:
+    - npm install
+    - npm run unit
 build:
-  stage: build
+  stage: deploy
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: ['']
