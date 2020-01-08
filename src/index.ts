@@ -20,7 +20,7 @@ const argv = yargs.env('DYN').options({
   cfApikey: { type: 'string', demandOption: true, alias: 'k' },
   cfEmail: { type: 'string', demandOption: true, alias: 'e' },
   cfDomain: { type: 'string', demandOption: true, alias: 'd' },
-  cfHost: { type: 'string', demandOption: false, alias: 'h' },
+  cfHost: { type: 'string', demandOption: false, alias: 'h', array: true },
   fritzBox: {
     type: 'string',
     default: 'http://fritz.box:49000',
