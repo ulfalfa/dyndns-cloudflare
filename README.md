@@ -35,4 +35,23 @@ Finally bring up your docker container with
 docker-compose up -d
 ```
 
+You can also launch it directly 
+```
+Options:
+  --help           show help                                           [boolean]
+  --version        show version                                        [boolean]
+  --cfApikey, -k   the api key of your cloudflare account[string] [erforderlich]
+  --cfEmail, -e    the email address registered in your cloudflare account
+                                                         [string] [erforderlich]
+  --cfDomain, -d   an existing domain in cloudflare      [string] [erforderlich]
+  --cfHost, -h     the host entries to update - you can specify multiple host by
+                   comma                                                [string]
+  --fritzBox, -f   the url of the fritzbox
+                                   [string] [Standard: "http://fritz.box:49000"]
+  --intervall, -i  how often the fritzbox ip is checked    [Zahl] [Standard: 60]
+
+you can als use environment variables prefixed by DYN_CF_ and use snake
+uppercase
+```
+
 
