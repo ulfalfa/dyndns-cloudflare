@@ -1,0 +1,14 @@
+stages
+   - build
+
+build:
+   stage: build
+   services: 
+      - docker:dind
+   image: docker
+   only:
+      - testing
+   tags:
+      - docker
+   script:
+      - docker build .
